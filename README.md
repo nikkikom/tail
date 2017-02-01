@@ -2,8 +2,7 @@
 
 [![Coverity Analysis Status](https://scan.coverity.com/projects/11601/badge.svg)](https://scan.coverity.com/projects/nikkikom-tail)
 
-# tail 
-
+# TAIL 
 
 Interview Q&A task: write a command line program that outputs the 
 last five lines of a file and provide the corresponding set of 
@@ -88,6 +87,7 @@ service "coverity scan".
 ## Possible Improvements
 
 1. Integration with MyDash (CTest)
-2. Write **Behave** results in jUnit format, parse it and represent in a form of
-table.
+2. Store **Behave** results in jUnit format, parse it and represent in a form 
+of table.
 3. Push graphs with benchmarks results from *Travis CI* worker back to *GitHub*.
+4. CI with Windows (*AppVeyor*)
