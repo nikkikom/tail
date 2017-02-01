@@ -84,3 +84,10 @@ with the open service Travis CI. On every git commit it builds the
 program and run the tests on Linux (gcc and clang) and MacOS (clang) 
 environment. I also integrate the project with cloud code analitic 
 service "coverity scan".
+ 
+## Possible Improvements
+
+1. Integration with MyDash (CTest)
+2. Write **Behave** results in jUnit format, parse it and represent in a form of
+table.
+3. Push graphs with benchmarks results from *Travis CI* worker back to *GitHub*.
