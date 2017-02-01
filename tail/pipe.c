@@ -110,15 +110,15 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
   lring.tail = lring.base =
       (const char**) malloc (lines * sizeof (const char*));
   
-  /* makeing code analyzer happy */
-  memset (lring.base, 0, lines * sizeof (const char*));
-  
   if (NULL == lring.base)
   {
     /* saved_errno = */ errno = ENOMEM;
     perror ("tail_pipe");
     return TAIL_FAIL;
   }
+  
+  /* makeing code analyzer happy */
+  memset (lring.base, 0, lines * sizeof (const char*));
   
   for (;;) /* file read loop */
   {
@@ -142,7 +142,6 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
       
       /* accomodate pointers to new mem region */
       bring.tail += b - bring.base;
-      
       bring.base = b;
       
       /* move tailing blocks to the new end */
