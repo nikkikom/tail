@@ -59,7 +59,7 @@ matrix:
     # Mac OS X, clang (default version):
     - os: osx
       compiler: clang
-      env: COMPILER_NAME=clang O_CC=clang BUILD_TYPE=RELEASE
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang BUILD_TYPE=RELEASE
     - os: osx
       compiler: clang
       env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang BUILD_TYPE=DEBUG

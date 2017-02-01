@@ -40,11 +40,12 @@
 		A129E45E1E3E4AA40094F828 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		A1555B581E40C6EE002920BC /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		A18864051E4219F600F205B4 /* bench.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = bench.sh; sourceTree = "<group>"; };
+		A18864061E427F8600F205B4 /* bench_results.mmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bench_results.mmap.png; sourceTree = "<group>"; };
+		A18864071E427F8600F205B4 /* bench_results.pipe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bench_results.pipe.png; sourceTree = "<group>"; };
+		A18864081E427F8600F205B4 /* bench_results.read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bench_results.read.png; sourceTree = "<group>"; };
 		A1CB3CA91E3B934500E2C024 /* .travis.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A1CB3CAA1E3B95DC00E2C024 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1CB3CAC1E3B9E1400E2C024 /* configure.ac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = configure.ac; sourceTree = "<group>"; };
-		A1CB3CB11E3BA81C00E2C024 /* input01.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = input01.txt; sourceTree = "<group>"; };
-		A1CB3CB21E3BA81C00E2C024 /* input02.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = input02.txt; sourceTree = "<group>"; };
 		A1CB3CB41E3BA84900E2C024 /* read.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = read.c; sourceTree = "<group>"; };
 		A1CB3CB51E3BA84900E2C024 /* mmap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mmap.c; sourceTree = "<group>"; };
 		A1CB3CB61E3BA84900E2C024 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -94,10 +95,11 @@
 		A1CB3CB01E3BA80300E2C024 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				A18864061E427F8600F205B4 /* bench_results.mmap.png */,
+				A18864071E427F8600F205B4 /* bench_results.pipe.png */,
+				A18864081E427F8600F205B4 /* bench_results.read.png */,
 				A18864051E4219F600F205B4 /* bench.sh */,
 				A1CB3CBF1E3BF96900E2C024 /* behave */,
-				A1CB3CB11E3BA81C00E2C024 /* input01.txt */,
-				A1CB3CB21E3BA81C00E2C024 /* input02.txt */,
 				A1CB3CC01E3C010900E2C024 /* gen_text.c */,
 			);
 			name = Tests;
