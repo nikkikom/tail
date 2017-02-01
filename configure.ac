@@ -1,0 +1,4 @@
+AC_INIT([tail], [1.0])
+AC_FUNC_MMAP
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

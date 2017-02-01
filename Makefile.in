@@ -1,0 +1,80 @@
+#!/usr/bin/make -f
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+
+# project name
+TARGET_TAIL 	= tail
+TARGET_GEN_TEXT = gen_text
+
+CC		= @CC@
+TARGET_ARCH	=
+
+# compiling flags
+CPPFLAGS        = @CPPFLAGS@ @DEFS@ -I.
+CFLAGS		= @CFLAGS@ -std=c99 -Wall -Werror
+
+LINKER		= $(CC)
+# liner flags here
+LDFLAGS		= @LDFLAGS@
+
+# directories
+SRCDIR		= tail
+OBJDIR		= obj
+BINDIR		= bin
+
+SOURCES 	:= $(wildcard $(SRCDIR)/*.c)
+INCLUDES	:= $(wildcard $(SRCDIR)/*.h)
+OBJECTS		:= $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+
+RM		= rm -f
+MKDIR_P		= mkdir -p
+RMDIR		= rm -rf
+
+.PHONY: all
+all:	$(BINDIR)/$(TARGET_TAIL) $(BINDIR)/$(TARGET_GEN_TEXT)
+
+$(BINDIR)/$(TARGET_TAIL): $(BINDIR) $(OBJDIR) $(OBJECTS)
+	@$(LINKER) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) -o $@ $(OBJECTS)
+	@echo "LD "$@
+
+$(BINDIR)/$(TARGET_GEN_TEXT): $(BINDIR) $(OBJDIR)/gen_text.o
+	@$(LINKER) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $(OBJDIR)/gen_text.o -o $@
+	@echo "LD "$@
+
+$(OBJDIR)/gen_text.o : tests/gen_text.c
+	@$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c $< -o $@
+	@echo "CC "$<
+
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
+	@$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c $< -o $@
+	@echo "CC "$<
+
+$(BINDIR):
+	@$(MKDIR_P) $(BINDIR)
+	@echo "MKDIR "$(BINDIR)
+
+$(OBJDIR):
+	@$(MKDIR_P) $(OBJDIR)
+	@echo "MKDIR "$(OBJDIR)
+
+.PHONY: test
+test:
+	cd tests;
+	@echo "Tests completed"
+
+.PHONY: clean
+clean:
+	@$(RM) $(OBJECTS)
+	@$(RM) config.log config.status
+	@$(RMDIR) autom4te.cache
+	@echo "Cleanup complete"
+
+.PHONY: remove
+remove: clean
+	@$(RM) $(BINDIR)/$(TARGET_TAIL) $(BINDIR)/$(TARGET_GEN_TEXT)
+	@$(RMDIR) $(BINDIR) $(OBJDIR)
+	@echo "Executable removed"

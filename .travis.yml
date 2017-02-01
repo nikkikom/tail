@@ -1,0 +1,105 @@
+sudo: false
+language: c
+
+matrix:
+  include:
+    # Linux, gcc 6:
+    - os: linux
+      dist: trusty
+      addons: &gcc6
+        apt:
+          packages:
+            - gcc-6
+            - python-pip
+          sources:
+            - ubuntu-toolchain-r-test
+      compiler: gcc
+      env: DO_BENCH=0 COMPILER_NAME=gcc O_CC=gcc-6 BUILD_TYPE=RELEASE
+    - os: linux
+      dist: trusty
+      addons: *gcc6
+      compiler: gcc
+      env: DO_BENCH=0 COMPILER_NAME=gcc O_CC=gcc-6 BUILD_TYPE=DEBUG
+
+    # Linux, clang 3.8:
+    - os: linux
+      dist: trusty
+      addons: &clang38
+        apt:
+          packages:
+            - clang-3.8
+            - python-pip
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+      compiler: clang
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang-3.8 BUILD_TYPE=RELEASE
+    - os: linux
+      dist: trusty
+      addons: *clang38
+      compiler: clang
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang-3.8 BUILD_TYPE=DEBUG
+
+    # Linux clang for benchmarking
+    - os: linux
+      dist: trusty
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+            - python-pip
+            - gnuplot
+            - bc
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+      compiler: clang
+      env: DO_BENCH=1 COMPILER_NAME=clang O_CC=clang-3.8 BUILD_TYPE=RELEASE
+
+    # Mac OS X, clang (default version):
+    - os: osx
+      compiler: clang
+      env: COMPILER_NAME=clang O_CC=clang BUILD_TYPE=RELEASE
+    - os: osx
+      compiler: clang
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang BUILD_TYPE=DEBUG
+
+
+cache:
+  directories:
+    - cache
+
+install:
+  - |
+    if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+      if [ "!" -x cache/cmake/bin/cmake ]; then
+        CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
+        mkdir -p cache/cmake
+        travis_retry wget --no-check-certificate --quiet -O - "${CMAKE_URL}" | tar --strip-components=1 -xz -C cache/cmake
+      fi
+      export PATH="$TRAVIS_BUILD_DIR/cache/cmake/bin:$PATH"
+    elif [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+      if "!" brew ls --version cmake; then
+        brew install cmake
+      fi
+    fi
+
+before_script:
+  - uname -a
+  - which cmake
+  - cmake --version
+  - echo $CC $COMPILER_NAME
+  - which $CC
+  - $CC --version
+
+before_install:
+  - pip install behave --user
+  - export CC=$O_CC
+
+script:
+  - mkdir build
+  - (cd build && cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..)
+  - (cd build && cmake --build . --config "$BUILD_TYPE")
+  - (if [ "${DO_BENCH}" == 1 ]; then cd build/tests; ./bench.sh; fi)
+  # - ./configure && make remove && make && make test
+  #  - sonar-scanner
