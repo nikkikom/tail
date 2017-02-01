@@ -82,7 +82,7 @@ int tail_window (const char *file, int src, int dst, size_t lines,
     
     /* ignore <NL> if file ends with it 
      * (the most simple way to deal with that is just to 
-     * increase line by one)
+     * increase <lines> by one)
      */
     if (segment == num_of_segments && is_eol (window[len-1]))
       ++lines;
