@@ -16,8 +16,7 @@
 set -o errexit -o nounset
 
 : "${BRANCHES_TO_MERGE_REGEX?}" "${BRANCH_TO_MERGE_INTO?}"
-: "${GITHUB_SECRET_TOKEN?}" "${GITHUB_REPO?}"
-: "${TRAVIS_BRANCH?}"
+: "${GITHUB_REPO?}" "${TRAVIS_BRANCH?}"
 
 # Save some useful information
 REPO=$(git config remote.origin.url)
