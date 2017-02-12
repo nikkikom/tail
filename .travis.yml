@@ -1,6 +1,10 @@
 sudo: false
 language: c
 
+branches:
+  except:
+    - /^pr\..*/
+
 env:
   global:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
