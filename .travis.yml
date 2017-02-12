@@ -5,6 +5,11 @@ branches:
   except:
     - /^pr\..*/
 
+env:
+  global:
+    # GITHUB_SECRET_TOKEN for Travis pushes
+    secure: "RnDIN5dzw8UA/8NdwMFuSutuffQBmfbAC/AzmU7Una2QWvO8+dw30Ch35gF5b0l/NRRI1VudcSRBUt62goTUofikmUcqQcCnVkvHc1bWecIEYXto2lNWOFqpI2vyxzfLAa/mBNlm66Y0fa3vNLVtzjftAzTdMKYKUAxtwcElMQJjC76CN2uIZsy1JI5zawNrgF7D9HK0sqkkJZy2v4+kIFHHJeHVg4BnurlJfv/05Mv8ggDGgkONcNu5DDSuqgU1G1VMRqdJhZkUhtTNFuEZhphwk0HPNoaP3+ILt/ad/2caQEtaWP4csAJs2ugvmvSzbBiVPpQ5zC+s+nOaRIo+Gp8npiT5GFzU/rwTc215THt+REUlkz9DlREF1CTv3p6SS89LA9LAhXffuKSqRCAbk5pw0moVUgVxFqw6PKaK1yb4Xx7WXzBXPvz862N6teeoLtnmzu+awn74Eak6lhj+VBjhDQjeWHqC1PzUActnXBHvrG1CqiYL/AXzLla+elmkX9bTsGfE38b72hUCrsRL0Oa2cDmkSsXrjO17BXSYHlpFnBlqGW2DjNOCLM0powHrd1bAb9Auo7kStmFf5pXVj17/F0SmYUgEly19piLFojESGRbjyiMPJ6MdiwjppuC78aNVRnhBoBiUQUK6Pli1afH/xKYGQQ7XMVemA7aKPrA="
+
 matrix:
   include:
     # Linux, gcc 6:
@@ -108,4 +113,10 @@ script:
 
 after_success:
   - chmod +x upload-generated-files.sh
-  - (if [ "${DO_BENCH}" == 1 ]; then ./upload-generated-files.sh; fi)
+  - |
+    if [ "${DO_BENCH}" == 1 ]; then
+      BRANCHES_TO_MERGE_REGEX='^feature/' \
+      BRANCH_TO_MERGE_INTO=develop \
+      GITHUB_REPO=nikkiom/tail \
+        ./upload-generated-files.sh
+    fi
