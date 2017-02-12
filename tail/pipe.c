@@ -50,10 +50,10 @@ struct blocks_ring
 /* ring bugger for the pointers to the lines start positions */
 struct lines_ring
 {
-  size_t capacity;
-  size_t size;
-  const char **tail;
-  const char **base;
+  size_t      capacity;
+  size_t      size;     /* occupied cells                          */
+  size_t      tail;     /* index of first free cell                */
+  const char *base[];   /* array of pointers to the start of lines */
 };
 
 /* formulas to deal with ring buffers */
@@ -78,7 +78,9 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
 
   /* ring buffers */
   struct blocks_ring bring;
-  struct lines_ring lring;
+  struct lines_ring *lring;
+  
+  size_t lhead;
   
   /* checks input arguments */
   if (! (
@@ -105,24 +107,22 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
   bring.block_size = segment_size;
   
   /* initialize lines */
-  memset (&lring, 0, sizeof lring);
-  lring.capacity = lines;
-  lring.tail = lring.base =
-      (const char**) malloc (lines * sizeof (const char*));
-  
-  if (NULL == lring.base)
+  lring = (struct lines_ring*) malloc (sizeof *lring +
+                                       lines * sizeof (const char*));
+  if (NULL == lring)
   {
     /* saved_errno = */ errno = ENOMEM;
     perror ("tail_pipe");
     return TAIL_FAIL;
   }
   
-  /* makeing code analyzer happy */
-  memset (lring.base, 0, lines * sizeof (const char*));
+  memset (lring, 0, sizeof *lring + lines * sizeof (const char*));
+  lring->capacity = lines;
   
   for (;;) /* file read loop */
   {
     ssize_t rlen;
+    char const* first_line;
     char* current_block;
     
     /* check if need more space in blocks ring */
@@ -205,20 +205,13 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
       if (at_line_start)
       {
         /* track this line position */
-        *RING_HEAD(lring) = s;
-        
-        /* fill lring unless it is full */
-        if (lring.size < lring.capacity)
-          ++lring.size;
-        /* otherwise overwrite old line pointers in ring */
-        else if (++lring.tail >= RING_END(lring))
-            lring.tail = lring.base;
+        lring->base[lring->tail++] = s;
+        lring->tail %= lring->capacity;
       }
-    
-    /* clear buffers that does not contain active new lines pointers */
-    if (lring.size >= lring.capacity)
-      while (*lring.tail < *bring.tail ||
-             *lring.tail >= *bring.tail + bring.block_size)
+
+    if (NULL != (first_line = lring->base[lring->tail]))
+      while (first_line < *bring.tail ||
+             first_line >= *bring.tail + bring.block_size)
       {
         free (*bring.tail++);
         if (bring.tail >= RING_END (bring)) bring.tail -= bring.capacity;
@@ -227,15 +220,22 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
       }
   } /* file read loop */
   
+  /* find first stored line ptr. for-loop stops at first not-null pointer or
+   * when lhead will become lring->tail second time 
+   */
+  for (lhead = lring->tail; NULL != lring->base[lhead] &&
+       lring->tail != (lhead = (lhead+1) % lring->capacity);)
+    ;
+  
   /* write the lines */
-  if (lring.size > 0)
+  if (NULL != lring->base[lhead])
   {
     const char* start;
     char **blocks_ptr = bring.tail;
     size_t blocks_num = bring.size;
     assert (blocks_num > 0);
     
-    for (start = *lring.tail; blocks_num > 0; --blocks_num)
+    for (start = lring->base[lhead]; blocks_num > 0; --blocks_num)
     {
       size_t blen = bring.block_size;
       assert (start >= *blocks_ptr);
@@ -263,7 +263,7 @@ free_bring:
   free (bring.base);
 
   /* free lring */
-  free (lring.base);
+  free (lring);
   
   errno = saved_errno;
   return ret;
