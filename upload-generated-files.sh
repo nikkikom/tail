@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -x
 
 #  upload-generated-files.sh
 #  Tail
