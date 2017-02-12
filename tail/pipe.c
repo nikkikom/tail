@@ -52,7 +52,7 @@ struct lines_ring
 {
   size_t      capacity;
   size_t      size;     /* occupied cells                          */
-  size_t      tail;     /* index of first free cell                */
+  size_t      head;     /* index of first free cell                */
   const char *base[];   /* array of pointers to the start of lines */
 };
 
@@ -80,7 +80,7 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
   struct blocks_ring bring;
   struct lines_ring *lring;
   
-  size_t lhead;
+  size_t ltail;
   
   /* checks input arguments */
   if (! (
@@ -205,11 +205,11 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
       if (at_line_start)
       {
         /* track this line position */
-        lring->base[lring->tail++] = s;
-        lring->tail %= lring->capacity;
+        lring->base[lring->head++] = s;
+        lring->head %= lring->capacity;
       }
 
-    if (NULL != (first_line = lring->base[lring->tail]))
+    if (NULL != (first_line = lring->base[lring->head]))
       while (first_line < *bring.tail ||
              first_line >= *bring.tail + bring.block_size)
       {
@@ -221,21 +221,21 @@ int tail_pipe (const char *file, int src, int dst, size_t lines,
   } /* file read loop */
   
   /* find first stored line ptr. for-loop stops at first not-null pointer or
-   * when lhead will become lring->tail second time 
+   * when ltail will become lring->head second time
    */
-  for (lhead = lring->tail; NULL != lring->base[lhead] &&
-       lring->tail != (lhead = (lhead+1) % lring->capacity);)
+  for (ltail = lring->head; NULL != lring->base[ltail] &&
+       lring->head != (ltail= (ltail+1) % lring->capacity);)
     ;
   
   /* write the lines */
-  if (NULL != lring->base[lhead])
+  if (NULL != lring->base[ltail])
   {
     const char* start;
     char **blocks_ptr = bring.tail;
     size_t blocks_num = bring.size;
     assert (blocks_num > 0);
     
-    for (start = lring->base[lhead]; blocks_num > 0; --blocks_num)
+    for (start = lring->base[ltail]; blocks_num > 0; --blocks_num)
     {
       size_t blen = bring.block_size;
       assert (start >= *blocks_ptr);
