@@ -43,6 +43,7 @@
 		A18864061E427F8600F205B4 /* bench_results.mmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bench_results.mmap.png; sourceTree = "<group>"; };
 		A18864071E427F8600F205B4 /* bench_results.pipe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bench_results.pipe.png; sourceTree = "<group>"; };
 		A18864081E427F8600F205B4 /* bench_results.read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bench_results.read.png; sourceTree = "<group>"; };
+		A1C067C81E50A573007C9BEC /* upload-generated-files.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "upload-generated-files.sh"; sourceTree = "<group>"; };
 		A1CB3CA91E3B934500E2C024 /* .travis.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A1CB3CAA1E3B95DC00E2C024 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1CB3CAC1E3B9E1400E2C024 /* configure.ac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = configure.ac; sourceTree = "<group>"; };
@@ -88,6 +89,7 @@
 				A1CB3CA91E3B934500E2C024 /* .travis.yml */,
 				A1CB3CCD1E3C801700E2C024 /* sonar-project.properties */,
 				A1555B581E40C6EE002920BC /* CMakeLists.txt */,
+				A1C067C81E50A573007C9BEC /* upload-generated-files.sh */,
 			);
 			name = Integration;
 			sourceTree = "<group>";

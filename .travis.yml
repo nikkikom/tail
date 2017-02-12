@@ -5,34 +5,69 @@ branches:
   except:
     - /^pr\..*/
 
-env:
-  global:
-    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-    #   via the "travis encrypt" command using the project repo's public key
-    - secure: "M5MaBBl4YSHGhkw4MI1miNK4g7UmmdttORvkJtCqXDO3vdyWynqb3gjA/J6krlvzRbzG4DqqqoJpGXqn/IkdDZ6obqpvzY4CbIE5Kk6s1egE3OkfXgRruO/eFN9VXqkaN5PFdj30jgS4yPrn1BEsZAogz1PRcO8vnxsSCEpvaJTysSIRggLIF8xYeBWv8VKuPHb+ZGWdWSTWGWQ/f45f/q31L1Orr5q18V/WL8vGnUdtjtJgM9GHhK6oPk9nKnoN6692XRXfuz/ELY68cDpx5L04KI2ZuOyzmVTFp6ga+O/AbfMtJeBcFsaIjD/CRLG7jcn3KbTK+c9QVYK7/fORiegMJm7EfctRz/Cb/8uNmSBLmAgdsiFVEOCA/JAryb9YFX3/JLQhphSLSEVIQaAfiht9KrHmW3GdKBTQtmaqKGtZ4dNwHqgmECrJW9VGaC2iGafenMFzS4WJsS0liPQRuGD5EPtleVLvrZeYnZXoX2nsPBESNjU4OdXhKEZCO856L91lBOcYhkBQAt6JYdg23h2s5QglUAo0QmmNLc1xgjHwxrV+FyN8UdA5VJoghyemO5CENpgnjSRvQWd7wv4BcC1ovwEQzXqTFklRKniT3NEU0JWbdRPXKKE2ZP33umc6ma617bq9gkuVlnhQMjMylwNXY5N0Cza1s78kroSfbBY="
-
 matrix:
   include:
+    # Linux, gcc 6:
+    - os: linux
+      dist: trusty
+      addons: &gcc6
+        apt:
+          packages:
+            - gcc-6
+            - python-pip
+          sources:
+            - ubuntu-toolchain-r-test
+      compiler: gcc
+      env: DO_BENCH=0 COMPILER_NAME=gcc O_CC=gcc-6 BUILD_TYPE=RELEASE
+    - os: linux
+      dist: trusty
+      addons: *gcc6
+      compiler: gcc
+      env: DO_BENCH=0 COMPILER_NAME=gcc O_CC=gcc-6 BUILD_TYPE=DEBUG
+
+    # Linux, clang 3.8:
+    - os: linux
+      dist: trusty
+      addons: &clang38
+        apt:
+          packages:
+            - clang-3.8
+            - python-pip
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+      compiler: clang
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang-3.8 BUILD_TYPE=RELEASE
+    - os: linux
+      dist: trusty
+      addons: *clang38
+      compiler: clang
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang-3.8 BUILD_TYPE=DEBUG
+
+    # Linux clang for benchmarking
     - os: linux
       dist: trusty
       addons:
         apt:
           packages:
             - clang-3.8
+            - python-pip
+            - gnuplot
+            - bc
           sources:
-          - ubuntu-toolchain-r-test
-          - llvm-toolchain-precise-3.8
-        coverity_scan:
-          project:
-            name: nikkikom/tail
-            description: Build submitted via Travis CI
-            version: 1.0
-          notification_email: nikkikom@gmail.com
-          build_command_prepend: "cov-configure --template --compiler clang-3.8 --comptype clangcc && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=RELEASE .."
-          build_command: "cmake --build . --config RELEASE"
-          branch_pattern: coverity_scan
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
       compiler: clang
-      env: COMPILER_NAME=clang O_CC=clang-3.8 BUILD_TYPE=RELEASE
+      env: DO_BENCH=1 COMPILER_NAME=clang O_CC=clang-3.8 BUILD_TYPE=RELEASE
+
+    # Mac OS X, clang (default version):
+    - os: osx
+      compiler: clang
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang BUILD_TYPE=RELEASE
+    - os: osx
+      compiler: clang
+      env: DO_BENCH=0 COMPILER_NAME=clang O_CC=clang BUILD_TYPE=DEBUG
+
 
 cache:
   directories:
@@ -62,10 +97,15 @@ before_script:
   - $CC --version
 
 before_install:
+  - pip install behave --user
   - export CC=$O_CC
 
 script:
-  - echo "Skipping regular build since Coverity Scan is active"
+  - mkdir build
+  - (cd build && cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..)
+  - (cd build && cmake --build . --config "$BUILD_TYPE")
+  - (if [ "${DO_BENCH}" == 1 ]; then cd build/tests; ./bench.sh; fi)
 
-after_script:
-  - cat build/cov-int/build-log.txt
+after_success:
+  - chmod +x upload-generated-files.sh
+  - (if [ "${DO_BENCH}" == 1 ]; then ./upload-generated-files.sh; fi)
