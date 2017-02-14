@@ -15,7 +15,7 @@
 
 set -o errexit -o nounset
 
-: "${BRANCHES_TO_MERGE_REGEX?}" "${BRANCH_TO_MERGE_INTO?}"
+: "${BRANCHES_TO_UPDATE?}"
 : "${GITHUB_REPO?}" "${TRAVIS_BRANCH?}"
 
 # Save some useful information
@@ -24,9 +24,9 @@ SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
 SHA=$(git rev-parse --verify HEAD)
 REV=$(git rev-parse --short HEAD)
 
-if ! grep -q "$BRANCHES_TO_MERGE_REGEX" <<< "$TRAVIS_BRANCH"; then
+if ! grep -q "$BRANCHES_TO_UPDATE" <<< "$TRAVIS_BRANCH"; then
   printf "Current branch %s doesn't match regex %s, exiting\\n" \
-  "$TRAVIS_BRANCH" "$BRANCHES_TO_MERGE_REGEX" >&2
+  "$TRAVIS_BRANCH" "$BRANCHES_TO_UPDATE" >&2
   exit 0
 fi
 
@@ -39,8 +39,8 @@ prevwd=$PWD
 # shellcheck disable=SC2164
 cd "$repo_temp"
 
-printf 'Checking out %s\n' "$BRANCH_TO_MERGE_INTO" >&2
-git checkout "$BRANCH_TO_MERGE_INTO"
+printf 'Checking out %s\n' "$TRAVS_BRANCH" >&2
+git checkout "$TRAVIS_BRANCH"
 
 /bin/cp -f "$prev_wd/tests/*.png" "$repo_temp/tests/"
 
@@ -49,7 +49,7 @@ git checkout "$BRANCH_TO_MERGE_INTO"
 
 printf 'Pushing to %s\n' "$GITHUB_REPO" >&2
 
-push_uri="https://$GITHUB_SECRET_TOKEN@github.com/$GITHUB_REPO"
+# push_uri="https://$GITHUB_SECRET_TOKEN@github.com/$GITHUB_REPO"
 
 # Redirect to /dev/null to avoid secret leakage
 # git push "$push_uri" "$BRANCH_TO_MERGE_INTO" >/dev/null 2>&1

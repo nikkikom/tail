@@ -115,8 +115,7 @@ after_success:
   - chmod +x upload-generated-files.sh
   - |
     if [ "${DO_BENCH}" == 1 ]; then
-      BRANCHES_TO_MERGE_REGEX='^feature/' \
-      BRANCH_TO_MERGE_INTO=develop \
+      BRANCHES_TO_UPDATE='^develop' \
       GITHUB_REPO=nikkiom/tail \
         ./upload-generated-files.sh
     fi
