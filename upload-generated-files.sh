@@ -45,7 +45,7 @@ git config user.email "$COMMIT_AUTHOR_EMAIL"
 printf 'Checking out %s\n' "$TRAVIS_BRANCH" >&2
 git checkout "$TRAVIS_BRANCH"
 
-/bin/cp -f $prev_wd/tests/*.png "$repo_temp/tests/"
+/bin/cp -f "$prev_wd"/build/tests/*.png "$repo_temp"/tests/
 
 echo "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
 

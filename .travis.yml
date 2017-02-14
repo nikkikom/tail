@@ -110,7 +110,7 @@ script:
   - mkdir build
   - (cd build && cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..)
   - (cd build && cmake --build . --config "$BUILD_TYPE")
-  - (if [ "${DO_BENCH}" == 2 ]; then cd build/tests; ./bench.sh; fi)
+  - (if [ "${DO_BENCH}" == 1 ]; then cd build/tests; ./bench.sh; fi)
 
 after_success:
   - chmod +x upload-generated-files.sh
