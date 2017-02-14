@@ -34,7 +34,7 @@ fi
 repo_temp=$(mktemp -d)
 git clone "$REPO" "$repo_temp"
 
-prevwd=$PWD
+prev_wd=$PWD
 
 # shellcheck disable=SC2164
 cd "$repo_temp"
