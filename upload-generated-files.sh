@@ -15,7 +15,7 @@
 
 set -o errexit -o nounset
 
-: "${BRANCHES_TO_UPDATE?}" "${TRAVIS_BRANCH?}"
+:  "${BRANCHES_TO_UPDATE?}" "${TRAVIS_BRANCH?}"
 
 # Save some useful information
 REPO=$(git config remote.origin.url)
