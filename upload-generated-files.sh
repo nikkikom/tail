@@ -39,13 +39,19 @@ prevwd=$PWD
 # shellcheck disable=SC2164
 cd "$repo_temp"
 
-printf 'Checking out %s\n' "$TRAVS_BRANCH" >&2
+git config user.name "Travis CI"
+git config user.email "$COMMIT_AUTHOR_EMAIL"
+
+printf 'Checking out %s\n' "$TRAVIS_BRANCH" >&2
 git checkout "$TRAVIS_BRANCH"
 
 /bin/cp -f "$prev_wd/tests/*.png" "$repo_temp/tests/"
 
-# printf 'Merging %s\n' "$TRAVIS_COMMIT" >&2
+echo "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+
+printf 'Updating %s\n' "$TRAVIS_COMMIT" >&2
 # git merge --ff-only "$TRAVIS_COMMIT"
+git commit -m "Update performance data" tests/*.png
 
 printf 'Pushing to %s\n' "$REPO" >&2
 
