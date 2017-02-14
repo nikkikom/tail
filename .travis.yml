@@ -115,7 +115,5 @@ after_success:
   - chmod +x upload-generated-files.sh
   - |
     if [ "${DO_BENCH}" == 1 ]; then
-      BRANCHES_TO_UPDATE='^develop' \
-      GITHUB_REPO=nikkiom/tail \
-        ./upload-generated-files.sh
+      BRANCHES_TO_UPDATE='^develop' ./upload-generated-files.sh
     fi

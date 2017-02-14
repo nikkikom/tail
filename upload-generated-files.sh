@@ -15,11 +15,11 @@
 
 set -o errexit -o nounset
 
-: "${BRANCHES_TO_UPDATE?}"
-: "${GITHUB_REPO?}" "${TRAVIS_BRANCH?}"
+: "${BRANCHES_TO_UPDATE?}" "${TRAVIS_BRANCH?}"
 
 # Save some useful information
 REPO=$(git config remote.origin.url)
+GITHUB_REPO=${REPO//*github.com\//}
 SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
 SHA=$(git rev-parse --verify HEAD)
 REV=$(git rev-parse --short HEAD)
@@ -32,7 +32,7 @@ fi
 
 # Since Travis does a partial checkout, we need to get the whole thing
 repo_temp=$(mktemp -d)
-git clone "https://github.com/$GITHUB_REPO" "$repo_temp"
+git clone "$REPO" "$repo_temp"
 
 prevwd=$PWD
 
@@ -47,10 +47,10 @@ git checkout "$TRAVIS_BRANCH"
 # printf 'Merging %s\n' "$TRAVIS_COMMIT" >&2
 # git merge --ff-only "$TRAVIS_COMMIT"
 
-printf 'Pushing to %s\n' "$GITHUB_REPO" >&2
+printf 'Pushing to %s\n' "$REPO" >&2
 
 # push_uri="https://$GITHUB_SECRET_TOKEN@github.com/$GITHUB_REPO"
 
 # Redirect to /dev/null to avoid secret leakage
-# git push "$push_uri" "$BRANCH_TO_MERGE_INTO" >/dev/null 2>&1
+# git push "$push_uri" "$TRAVIS_BRANCH" >/dev/null 2>&1
 # git push "$push_uri" :"$TRAVIS_BRANCH" >/dev/null 2>&1
